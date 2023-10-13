@@ -1,2 +1,3 @@
 venv
 scanner.egg-info
+scanner/__pycache__

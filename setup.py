@@ -12,8 +12,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=read_requirements(),
-    entry_point=''''
-        [console_scripts]
-        scanner=scanner.__main__:main
-    '''
+    entry_points={
+        'console_scripts': [
+            'scanner = scanner.__main__:main',
+        ],
+    }
 )
