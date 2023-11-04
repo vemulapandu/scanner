@@ -14,7 +14,7 @@ setup(
     install_requires=read_requirements(),
     entry_points={
         'console_scripts': [
-            'scanner = scanner.__main__:main',
+            'scanner = scanner.cli:cli',
         ],
     }
 )
