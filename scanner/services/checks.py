@@ -1,14 +1,16 @@
 import os
 import yaml
 import re
+from libsast import Scanner
 
 class Checks:
     def isValid(self, path):
-        dirs = os.listdir(path)
-        if dirs == ['resources', 'sources']:
-            return True
-        else:
-            return False
+        # dirs = os.listdir(path)
+        # if dirs == ['resources', 'sources']:
+        #     return True
+        # else:
+        #     return False
+        return True
         
     # def scan(self, path):
     #     i = 0
@@ -42,58 +44,83 @@ class Checks:
     #                 print('Found on line %s: %s' % (i+1, match.group()))
 
     def scan(self, path):
-        with open(os.path.join(os.path.dirname(__file__), "../weaknesses/warning.yml"), 'r') as file:
-            warnings = yaml.safe_load(file)
-        with open(os.path.join(os.path.dirname(__file__), "../weaknesses/info.yml"), 'r') as file:
-            infos = yaml.safe_load(file)
-        with open(os.path.join(os.path.dirname(__file__), "../weaknesses/error.yml"), 'r') as file:
-            errors = yaml.safe_load(file)
-        for warning in warnings:
-            warning["pattern"] = re.compile(warning["pattern"])
-        for error in errors:
-            error["pattern"] = re.compile(error["pattern"])
-        for info in infos:
-            info["pattern"] = re.compile(info["pattern"])
+        # with open(os.path.join(os.path.dirname(__file__), "../weaknesses/warning.yml"), 'r') as file:
+        #     warnings = yaml.safe_load(file)
+        # with open(os.path.join(os.path.dirname(__file__), "../weaknesses/info.yml"), 'r') as file:
+        #     infos = yaml.safe_load(file)
+        # with open(os.path.join(os.path.dirname(__file__), "../weaknesses/error.yml"), 'r') as file:
+        #     errors = yaml.safe_load(file)
+        # for warning in warnings:
+        #     warning["pattern"] = re.compile(warning["pattern"])
+        # for error in errors:
+        #     error["pattern"] = re.compile(error["pattern"])
+        # for info in infos:
+        #     info["pattern"] = re.compile(info["pattern"])
         
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                fileextenstion = os.path.splitext(file)[1]
-                if fileextenstion == ".java":
-                    self.scanfile(warnings, infos, errors, root + '/' + file)
+        # for root, dirs, files in os.walk(path):
+        #     for file in files:
+        #         fileextenstion = os.path.splitext(file)[1]
+        #         if fileextenstion == ".java":
+        #             self.scanfile(warnings, infos, errors, root + '/' + file)
+        options = {
+            'match_rules': os.path.join(os.path.dirname(__file__), "../rules/patterns"),
+            'sgrep_rules': os.path.join(os.path.dirname(__file__), "../rules/semgrep"),
+            'sgrep_extensions': {".java"},
+            'match_extensions': {".kt"},
+            'ignore_filenames': {".DS_Store"},
+            'ignore_extensions': {".apk", ".zip", ".ipa"},
+            "ignore_paths": {"__MACOSX", "fixtures", "spec", ".git", ".svn"}
+        }
+        scanner = Scanner(options, [path])
+        results = scanner.scan()
+        print(results)
+
+        print("-------------------RESULTS-------------------")
+
+        options = {
+            'match_rules': os.path.join(os.path.dirname(__file__), "../vulunerabilities/patterns"),
+            'match_extensions': {".java"},
+            'ignore_filenames': {".DS_Store"},
+            'ignore_extensions': {".apk", ".zip", ".ipa"},
+            "ignore_paths": {"__MACOSX", "fixtures", "spec", ".git", ".svn"}
+        }
+        scanner = Scanner(options, [path])
+        results = scanner.scan()
+        print(results)
     
-    def scanfile(self, warnings, infos, errors, file):
-        for i, line in enumerate(open(file, encoding="utf8")):
-            for warning in warnings:
-                for match in re.finditer(warning["pattern"], line):
-                    obj = {
-                        "id":warning["id"],
-                        "description": warning["message"],
-                        "match_line": "Found on line " + str(i+1) + " , " + str(match.group()),
-                        "severity": warning["severity"],
-                        "cwe": warning["cwe"]
-                    }
-                    print(obj)
+    # def scanfile(self, warnings, infos, errors, file):
+    #     for i, line in enumerate(open(file, encoding="utf8")):
+    #         for warning in warnings:
+    #             for match in re.finditer(warning["pattern"], line):
+    #                 obj = {
+    #                     "id":warning["id"],
+    #                     "description": warning["message"],
+    #                     "match_line": "Found on line " + str(i+1) + " , " + str(match.group()),
+    #                     "severity": warning["severity"],
+    #                     "cwe": warning["cwe"]
+    #                 }
+    #                 print(obj)
             
-            for error in errors:
-                # if("SafeDKWebAppInterface.java" in file and i == 147):
-                #     print(line, error["pattern"])
-                for match in re.finditer(error["pattern"], line):
-                    obj = {
-                        "id":error["id"],
-                        "description": error["message"],
-                        "match_line": "Found on line " + str(i+1) + " , " + str(match.group()),
-                        "severity": error["severity"],
-                        "cwe": error["cwe"]
-                    }
-                    print(obj)
+    #         for error in errors:
+    #             # if("SafeDKWebAppInterface.java" in file and i == 147):
+    #             #     print(line, error["pattern"])
+    #             for match in re.finditer(error["pattern"], line):
+    #                 obj = {
+    #                     "id":error["id"],
+    #                     "description": error["message"],
+    #                     "match_line": "Found on line " + str(i+1) + " , " + str(match.group()),
+    #                     "severity": error["severity"],
+    #                     "cwe": error["cwe"]
+    #                 }
+    #                 print(obj)
             
-            for info in infos:
-                for match in re.finditer(info["pattern"], line):
-                    obj = {
-                        "id":info["id"],
-                        "description": info["message"],
-                        "match_line": "Found on line " + str(i+1) + " , " + str(match.group()),
-                        "severity": info["severity"],
-                        "cwe": info["cwe"]
-                    }
-                    print(obj)
+    #         for info in infos:
+    #             for match in re.finditer(info["pattern"], line):
+    #                 obj = {
+    #                     "id":info["id"],
+    #                     "description": info["message"],
+    #                     "match_line": "Found on line " + str(i+1) + " , " + str(match.group()),
+    #                     "severity": info["severity"],
+    #                     "cwe": info["cwe"]
+    #                 }
+    #                 print(obj)

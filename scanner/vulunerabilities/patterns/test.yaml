@@ -1,0 +1,18 @@
+- id: Multiple unlocks of a critical resource
+  message: >-
+    This is a software weakness that can lead to various concurrency issues, such as race conditions, deadlocks, and data corruption.
+  type: Regex
+  pattern: (lock\.lock\(\);[\s\S]*?lock\.unlock\(\);[\s\S]*?lock\.unlock\(\);)
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-765
+- id: Unvalidated CORS Origin
+  message: >-
+    This refers to the use of Cross-Origin Resource Sharing (CORS) mechanisms without proper validation of the origin.
+  type: Regex
+  pattern: response\.setHeader\("Access-Control-Allow-Origin",\s*request\.getHeader\("Origin"\)\s*\);
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-942

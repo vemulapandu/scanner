@@ -1,7 +1,0 @@
-- id: webview_debugging
-  message: >-
-    Remote WebView debugging is enabled. This allows an attacker with
-    debugging access to interact with the webview and steal or corrupt data.
-  pattern: $WB.setWebContentsDebuggingEnabled(true);
-  severity: ERROR
-  cwe: cwe-489
