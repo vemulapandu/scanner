@@ -16,3 +16,165 @@
   input_case: exact
   metadata:
     cwe: cwe-942
+- id: path-injection
+  message: >-
+    Uncontrolled data used in path expression. Path injection vulnerabilities can lead to serious security issues, allowing attackers to manipulate file paths and potentially gain unauthorized access to sensitive resources.
+  type: Regex
+  pattern: new\s+File\s*\(\s*".*?"\s*\+\s*userInput\s*\+\s*".*?"\s*\);
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-73
+- id: command-line-injection
+  message: >-
+    Uncontrolled command line. Potential for unauthorized execution of commands, leading to serious security risks.
+  type: Regex
+  pattern: Runtime\.getRuntime\(\)\.exec\(".*?"\s*\+\s*userInput\s*\+\s*".*?"\);
+  severity: ERROR
+  input_case: exact
+  metedata:
+    cwe: cwe-74
+- id: call-to-thread-run
+  message: >-
+    Direct call to a run() method. It can result in unexpected behavior and defeat the purpose of using threads for concurrent execution.
+  type: Regex
+  pattern: Thread\s*\w+\s*=\s*new\s*Thread\(\)\s*;\s*\w+\.\s*run\s*\(\s*\);
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-572
+- id: non-https-url
+  message: >-
+    Failure to use HTTPS URLs. While it may not lead to an immediate security breach, it represents a potential security risk. Addressing warnings related to the use of non-HTTPS URLs is important for ensuring secure communication, especially when handling sensitive information.
+  type: Regex
+  pattern: \\bhttp(?:s)?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-693
+- id: unsafe-url-forward-dispatch-load
+  message: >-
+    Unsafe URL forward, dispatch, or load from remote source. It indicates a potential security risk.
+  type: Regex
+  pattern: loadUrl\((?:"|\')(.*?)(?:"|\')\);
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-664
+- id: sensitive-android-file-leak
+  message: >-
+    Leaking sensitive Android file. Leaking sensitive information, especially to external storage or other unauthorized locations, poses a serious security risk and can have severe consequences.
+  type: Regex
+  pattern: FileOutputStream\s+\w+\s+=\s+new\s+FileOutputStream\s*\(\s*"[^"]*\/sdcard\/[^"]*"\s*\);
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-664
+- id: intent-redirection
+  message: >-
+    Android Intent redirection. Intent redirection vulnerabilities can lead to unintended and potentially harmful behavior, making them critical to address for the overall security of the application.
+  type: Regex
+  pattern: Intent\s+\w+\s*=\s*new\s+Intent\s*\(\s*[^,]+,\s*Uri\.parse\(\s*"[^"]+"\s*\)\s*\);
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-664
+- id: unsafe-double-checked-locking
+  message: >-
+    Double-checked locking is not thread-safe. This can lead to race conditions and incorrect behavior in a multithreaded environment. 
+  type: Regex
+  pattern: \s*if\s*\(\s*\w+\s*==\s*null\s*\)\s*{\s*[\n\s]*\bsynchronized\s*\(\s*\w+\.\w+\(\)\s*\)\s*{\s*[\n\s]*if\s*\(\s*\w+\s*==\s*null\s*\)\s*{\s*\w+\s*=\s*new\s*\w+\(\);\s*}\s*}\s*}
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-662
+- id: cleartext-storage-in-class
+  message: >-
+    Cleartext storage of sensitive information using storable class. Storing sensitive information in plaintext within classes poses a significant security risk and is considered a serious vulnerability.
+  type: Regex
+  pattern: (public|private|protected|static|final)?\s*\w+\s*=\s*".*"\s*;
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-499
+- id: ssrf
+  message: >-
+    Server-side request forgery. SSRF vulnerabilities can lead to serious security risks, including unauthorized access to internal resources and potential attacks on backend systems.
+  type: Regex
+  pattern: new\s+URL\s*\(\s*("[^"]+"|\w+)\s*\)
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-441
+- id: unreachable-catch-clause
+  message: >-
+    Unreachable catch clause. It indicates a potential problem in the code structure that could affect maintainability and correctness.
+  type: Regex
+  pattern: catch\s*\([^)]*\)\s*\{(?:[^}]*\}\s*)*[^}]*\}
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-398
+- id: stack-trace-exposure
+  message: >-
+    Information exposure through a stack trace. Exposing stack traces can be a security risk, especially if sensitive details are revealed.
+  type: Regex
+  pattern: Log\.(e|wtf)\(.*exception.*\);
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-200
+- id: xss
+  message: >-
+    Cross-site scripting. XSS vulnerabilities can lead to the injection of malicious scripts, posing a significant security risk and potentially compromising the confidentiality and integrity of user data.
+  type: Regex
+  pattern: WebView\.loadData\(\s*".*<script>.*"\s*,\s*".*"\s*,\s*".*"\s*\);
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-79
+- id: insecure-ldaps-endpoint
+  message: >-
+    Insecure LDAPS Endpoint Configuration. Using insecure LDAPS can lead to the transmission of sensitive information over unencrypted connections, posing a significant security risk.
+  type: Regex
+  pattern: new InitialLdapContext\s*\(\s*.*,\s*null\s*\);
+  severity: ERROR
+  input_case: exact
+  metadata:
+    cwe: cwe-295
+- id: unsynchronized-getter
+  message: >-
+    Inconsistent synchronization of getter and setter. Unsynchronized getters in a multi-threaded environment can result in data inconsistency and potential race conditions.
+  type: Regex
+  pattern: (get|is)[A-Z][a-zA-Z0-9_]*\s*\(\s*\)[^;]*\{
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-664
+- id: partial-path-traversal
+  message: >-
+    Partial path traversal vulnerability. Partial path traversal vulnerabilities can pose security risks by potentially allowing unauthorized access to files outside of the intended directory.
+  type: Regex
+  pattern: (File|new\s+File)\(.*[\"']\.\.[\"'].*\)
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-706
+- id: android/fragment-injection
+  message: >-
+    Android fragment injection. Fragment injection vulnerabilities can pose security risks by potentially allowing untrusted input to manipulate fragment transactions.
+  type: Regex
+  pattern: FragmentTransaction\.replace\(.*,[^)]*Fragment\s*\.\s*class\s*\.
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-913
+- id: sensitive-cookie-not-httponly
+  message: >-
+    Sensitive cookies without the HttpOnly response header set. Setting the HttpOnly flag for sensitive cookies is considered a security best practice to prevent client-side script access.
+  type: Regex
+  pattern: setCookie\s*\(\s*".*(?<!HttpOnly)\b.*"\s*\);
+  severity: WARNING
+  input_case: exact
+  metadata:
+    cwe: cwe-1004
